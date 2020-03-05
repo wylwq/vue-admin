@@ -27,7 +27,7 @@
           <label>验证码</label>
           <el-row :gutter="20">
             <el-col :span="15"><el-input v-model.number="ruleForm.code"></el-input></el-col>
-            <el-col :span="9"><el-button type="success" class="block">获取验证码</el-button></el-col>
+            <el-col :span="9"><el-button type="success" class="block" @click="getSms()">获取验证码</el-button></el-col>
           </el-row>
           
         </el-form-item>
@@ -39,6 +39,7 @@
   </div>
 </template>
 <script>
+import {getSms} from '@/api/login.js'
 import {validusername, validpassword} from '@/utils/validate'
 export default {
   name: "login",
@@ -127,16 +128,21 @@ export default {
       this.model = item.type;
     },
     submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            alert('submit!');
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });
-      }
+      alert(111);
+        // this.$refs[formName].validate((valid) => {
+        //   if (valid) {
+        //     alert('submit!');
+        //   } else {
+        //     console.log('error submit!!');
+        //     return false;
+        //   }
+        // });
+      },
+    getSms() {
+      getSms();
+    }
   },
+  
   props: {},
   watch: {}
 };

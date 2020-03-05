@@ -87,6 +87,16 @@ module.exports = {
       hotOnly: false, // See https://github.com/vuejs/vue-cli/blob/dev/docs/cli-service.md#configuring-proxy
   
       proxy: null, // string | Object
+      
+      proxy: {
+          '/api':{
+            target:"http://www.baidu.com/api/",
+            changeOrigin:true,
+            pathRewrite:{
+              '^/api':''
+            }
+          }
+      },
 
       overlay: {
           warnings: true,
