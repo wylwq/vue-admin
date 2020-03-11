@@ -39,7 +39,7 @@
   </div>
 </template>
 <script>
-import {getSms} from '@/api/login.js'
+import {getSms, register, login} from '@/api/login.js'
 import {validusername, validpassword} from '@/utils/validate'
 export default {
   name: "login",
@@ -122,7 +122,15 @@ export default {
         ]
     },
     registerRequest:{
-
+      username:this.ruleForm.username,
+      password:this.ruleForm.password
+    },
+    smSRequest:{
+      username:this.ruleForm.code
+    },
+    loginRequest:{
+      username:this.ruleForm.username,
+      password:this.ruleForm.password
     }
     };
   },
@@ -140,13 +148,42 @@ export default {
     submitForm(formName) {
         this.$refs[formName].validate((valid) => {
            if (valid) {
-             alert('submit!');
+             if(this.model === 'login') {
+              this.login();
+             } else {
+              this.register(); 
+             }
            } else {
              console.log('error submit!!');
              return false;
            }
          });
       },
+    login() {
+      login(this.loginRequest).then(response =>{
+
+      }).catch(error =>{
+
+      })
+    },
+    register() {
+      register(this.registerRequest).then(response =>{
+        root.$message({
+          message:response.message,
+          type:'success'
+        })
+        clearCountDown();
+        toggleMenu(menutab[0]);
+      }).catch(error => {
+        //失败执行的代码
+      })
+    },  
+    clearCountDown(){
+      //还原验证码的默认状态
+      this.codeButton.status = false;
+      this.codeButton.text = '获取验证码';
+      clearInterval(this.timer);
+    },  
     getSms() {
       if(this.ruleForm.username == ''){
         this.$message.error('请输入手机号');
@@ -159,7 +196,7 @@ export default {
       this.codeButton.status = true;
       this.codeButton.text = '发送中...'
       setTimeout(()=>{
-        getSms(this.registerRequest).then(response =>{
+        getSms(this.smSRequest).then(response =>{
           let data = response.data;
           root.$message({
             message:data.message,
@@ -174,6 +211,9 @@ export default {
     },
     
     countDown(number) {
+      if(this.timer){
+        clearInterval(this.timer);
+      }
       this.timer = setInterval(() =>{
         number --; 
         if(number === 0) {
@@ -181,6 +221,7 @@ export default {
           this.codeButton.status = false;
           this.codeButton.text = '再次获取';
         }else {
+          this.codeButton.status = true;
           this.codeButton.text = `倒计时${number}秒`;
         }
       }, 1000);

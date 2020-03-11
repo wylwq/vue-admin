@@ -9,9 +9,18 @@ export function getSms(request) {
         data: request
     })
 }
- /**
+
+/**
   * 注册接口
   */
+export function register(request) {
+    return service.request({
+        method:"post",
+        url:"register",
+        data:request
+    })
+}
+ 
 
 /**
  * 获取用户角色接口 
@@ -20,3 +29,10 @@ export function getSms(request) {
  /**
   * 登录接口
   */
+ export function login(request) {
+    return service.request({
+        method:"post",
+        url:"login",
+        data:request
+    })
+}
