@@ -27,12 +27,12 @@
           <label>验证码</label>
           <el-row :gutter="20">
             <el-col :span="15"><el-input v-model.number="ruleForm.code"></el-input></el-col>
-            <el-col :span="9"><el-button type="success" class="block" @click="getSms()">获取验证码</el-button></el-col>
+            <el-col :span="9"><el-button type="success" class="block" @click="getSms()" :disabled="codeButton.status">{{codeButton.text}}</el-button></el-col>
           </el-row>
           
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('ruleForm')" class="block">提交</el-button>
+          <el-button type="primary" @click="submitForm('ruleForm')" class="block" :disabled="loginButtonStatus">{{model === 'login' ? '登录' : '注册'}}</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -62,7 +62,7 @@ export default {
     var validateUsername = (rule, value, callback) => {
     if (value === '') {
         callback(new Error('请输入手机号'));
-    } else if(validusername(value)) {
+    } else if(!validusername(value)) {
         callback(new Error('请输入正确的手机号'));
     } else {
         callback();
@@ -95,6 +95,12 @@ export default {
         { txt: "注册", current: false, type: 'register' }
     ],
     model:'login',
+    loginButtonStatus: true,
+    codeButton:{
+      status:false,
+      text:'获取验证码'
+    },
+    timer : null,
     ruleForm: {
         username: '',
         password: '',
@@ -114,6 +120,9 @@ export default {
         code: [
         { validator: checkCode, trigger: 'blur' }
         ]
+    },
+    registerRequest:{
+
     }
     };
   },
@@ -126,20 +135,55 @@ export default {
       });
       item.current = true;
       this.model = item.type;
+      this.$refs['ruleForm'].resetFields();
     },
     submitForm(formName) {
-      alert(111);
-        // this.$refs[formName].validate((valid) => {
-        //   if (valid) {
-        //     alert('submit!');
-        //   } else {
-        //     console.log('error submit!!');
-        //     return false;
-        //   }
-        // });
+        this.$refs[formName].validate((valid) => {
+           if (valid) {
+             alert('submit!');
+           } else {
+             console.log('error submit!!');
+             return false;
+           }
+         });
       },
     getSms() {
-      getSms();
+      if(this.ruleForm.username == ''){
+        this.$message.error('请输入手机号');
+        return false;
+      }
+      if(!validusername(this.ruleForm.username)) {
+        this.$message.error('请输入正确的手机号');
+        return false;
+      }
+      this.codeButton.status = true;
+      this.codeButton.text = '发送中...'
+      setTimeout(()=>{
+        getSms(this.registerRequest).then(response =>{
+          let data = response.data;
+          root.$message({
+            message:data.message,
+            type:'success'
+          })
+           //调用倒计时
+          this.loginButtonStatus = false;
+          this.countDown(60);
+        }).catch(error =>{
+      });
+     }, 1000)
+    },
+    
+    countDown(number) {
+      this.timer = setInterval(() =>{
+        number --; 
+        if(number === 0) {
+          clearInterval(this.timer);
+          this.codeButton.status = false;
+          this.codeButton.text = '再次获取';
+        }else {
+          this.codeButton.text = `倒计时${number}秒`;
+        }
+      }, 1000);
     }
   },
   

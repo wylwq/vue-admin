@@ -2,11 +2,11 @@ import service from '@/utils/interceptor'
 /**
  * 获取短信验证码接口
  */
-export function getSms() {
-    service.request({
+export function getSms(request) {
+    return service.request({
         method: 'get',
         url: 'getSms',
-        data: {}
+        data: request
     })
 }
  /**

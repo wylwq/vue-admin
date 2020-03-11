@@ -9,4 +9,4 @@ export function validusername(value) {
 export function validpassword(value) {
     let reg = /^\w{6,20}$/;
     return reg.test(value) ? true : false;
-}
+} 

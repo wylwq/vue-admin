@@ -1,11 +1,12 @@
 import axios from 'axios'
+import {Message} from 'element-ui'
 
 //创建axios，附给变量service
 //let BASEURL = process.env.NODE_ENV = 'production' ? '' : '/api';
 const BASEURL = '/api';
 const service = axios.create({
     baseURL : "http://www.baidu.com",
-    timeout: 1000,
+    timeout: 10000,
 });
 //alert(process.env.VUE_APP_ABC)
 
@@ -20,6 +21,11 @@ service.interceptors.request.use(function (config){
 //添加响应拦截器
 service.interceptors.response.use(function (config){
     //对响应数据做些什么
+    let data = config.data;
+    if(data.code != 200) {
+        Message.error(data.message);
+        return Promise.reject(data);
+    }
     return config;
 }, function(error){
     return Promise.reject(error);
