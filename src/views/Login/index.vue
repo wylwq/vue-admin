@@ -32,13 +32,14 @@
           
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('ruleForm')" class="block" :disabled="loginButtonStatus">{{model === 'login' ? '登录' : '注册'}}</el-button>
+          <el-button type="primary" @click="submitForm('ruleForm')" class="block">{{model === 'login' ? '登录' : '注册'}}</el-button>
         </el-form-item>
       </el-form>
     </div>
   </div>
 </template>
 <script>
+import sha1 from 'js-sha1'
 import {getSms, register, login} from '@/api/login.js'
 import {validusername, validpassword} from '@/utils/validate'
 export default {
@@ -95,7 +96,7 @@ export default {
         { txt: "注册", current: false, type: 'register' }
     ],
     model:'login',
-    loginButtonStatus: true,
+    //loginButtonStatus: true,
     codeButton:{
       status:false,
       text:'获取验证码'
@@ -120,17 +121,6 @@ export default {
         code: [
         { validator: checkCode, trigger: 'blur' }
         ]
-    },
-    registerRequest:{
-      username:this.ruleForm.username,
-      password:this.ruleForm.password
-    },
-    smSRequest:{
-      username:this.ruleForm.code
-    },
-    loginRequest:{
-      username:this.ruleForm.username,
-      password:this.ruleForm.password
     }
     };
   },
@@ -144,6 +134,7 @@ export default {
       item.current = true;
       this.model = item.type;
       this.$refs['ruleForm'].resetFields();
+      this.clearCountDown()
     },
     submitForm(formName) {
         this.$refs[formName].validate((valid) => {
@@ -160,14 +151,20 @@ export default {
          });
       },
     login() {
-      login(this.loginRequest).then(response =>{
-
-      }).catch(error =>{
-
+      this.$router.push({
+        name:'Console'
       })
+      // login(this.loginRequest()).then(response =>{
+      //   //页面跳转
+      //   this.$router.push({
+      //     name:'Console'
+      //   })
+      // }).catch(error =>{
+
+      // })
     },
     register() {
-      register(this.registerRequest).then(response =>{
+      register(this.registerRequest()).then(response =>{
         root.$message({
           message:response.message,
           type:'success'
@@ -196,14 +193,14 @@ export default {
       this.codeButton.status = true;
       this.codeButton.text = '发送中...'
       setTimeout(()=>{
-        getSms(this.smSRequest).then(response =>{
+        getSms(this.smSRequest()).then(response =>{
           let data = response.data;
           root.$message({
             message:data.message,
             type:'success'
           })
            //调用倒计时
-          this.loginButtonStatus = false;
+          //this.loginButtonStatus = false;
           this.countDown(60);
         }).catch(error =>{
       });
@@ -225,6 +222,25 @@ export default {
           this.codeButton.text = `倒计时${number}秒`;
         }
       }, 1000);
+    },
+    smSRequest() {
+      return {
+        username:this.ruleForm.code
+      }
+  },
+    registerRequest() {
+      return {
+        username:this.ruleForm.username,
+        //password:sha1(this.ruleForm.password)
+        password:this.ruleForm.password
+      }
+    },
+    loginRequest() {
+      return {
+        username:this.ruleForm.username,
+        //password:sha1(this.ruleForm.password)
+        password:this.ruleForm.password
+      }
     }
   },
   

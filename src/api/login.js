@@ -30,6 +30,7 @@ export function register(request) {
   * 登录接口
   */
  export function login(request) {
+    console.log(request);
     return service.request({
         method:"post",
         url:"login",
