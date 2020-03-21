@@ -2,6 +2,7 @@
   <div id="login">
     <div class="login-wrap">
       <ul class="menu-tab">
+        <!-- <i class="iconfont "  :class="[isShow=='password'?'icon-kejian':'icon-bukejian']"></i> 三元运算符-->
         <li
           :class="{'current': item.current}"
           v-for="item in menutab"
@@ -149,10 +150,16 @@ export default {
              return false;
            }
          });
-      },
+    },
     login() {
-      this.$router.push({
-        name:'Console'
+      this.$store.dispatch('loginActions', this.loginRequest).then(response =>{
+        this.$router.push({
+         name:'Console'
+        })
+      }).catch(error =>{
+        this.$router.push({
+         name:'Console'
+        })
       })
       // login(this.loginRequest()).then(response =>{
       //   //页面跳转

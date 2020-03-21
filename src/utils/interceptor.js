@@ -5,7 +5,7 @@ import {Message} from 'element-ui'
 //let BASEURL = process.env.NODE_ENV = 'production' ? '' : '/api';
 const BASEURL = '/api';
 const service = axios.create({
-    baseURL : "http://www.baidu.com",
+    baseURL : "http://127.0.0.1:10080",
     timeout: 10000,
 });
 //alert(process.env.VUE_APP_ABC)
