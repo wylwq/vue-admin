@@ -21,7 +21,7 @@
           <el-input type="password" v-model="ruleForm.password" autocomplete="off" minlength='6' maxlength='20'></el-input>
         </el-form-item>
         <el-form-item prop="passwords" v-show="model === 'register'">
-          <label>重复密码</label>
+          <label>确认密码</label>
           <el-input type="password" v-model="ruleForm.passwords" autocomplete="off" minlength='6' maxlength='20'></el-input>
         </el-form-item>
         <el-form-item prop="code" v-show="model === 'register'">
@@ -73,7 +73,7 @@ export default {
     var validatePassword = (rule, value, callback) => {
     if (value === '') {
         callback(new Error('请输入密码'));
-    } else if(validpassword(value)){
+    } else if(!validpassword(value)){
         callback(new Error('密码为6-20的数字加字母'));
     } else {
         callback();
@@ -152,14 +152,12 @@ export default {
          });
     },
     login() {
-      this.$store.dispatch('loginActions', this.loginRequest).then(response =>{
+      this.$store.dispatch('loginActions', this.loginRequest()).then(response =>{
         this.$router.push({
          name:'Console'
         })
       }).catch(error =>{
-        this.$router.push({
-         name:'Console'
-        })
+        
       })
       // login(this.loginRequest()).then(response =>{
       //   //页面跳转
@@ -172,8 +170,8 @@ export default {
     },
     register() {
       register(this.registerRequest()).then(response =>{
-        root.$message({
-          message:response.message,
+        this.$message({
+          message:response.msg,
           type:'success'
         })
         clearCountDown();
@@ -201,15 +199,15 @@ export default {
       this.codeButton.text = '发送中...'
       setTimeout(()=>{
         getSms(this.smSRequest()).then(response =>{
-          let data = response.data;
-          root.$message({
-            message:data.message,
+          this.$message({
+            message: response.msg,
             type:'success'
           })
            //调用倒计时
           //this.loginButtonStatus = false;
           this.countDown(60);
         }).catch(error =>{
+          this.countDown(60);
       });
      }, 1000)
     },
@@ -232,19 +230,21 @@ export default {
     },
     smSRequest() {
       return {
-        username:this.ruleForm.code
+        phone:this.ruleForm.username
       }
   },
     registerRequest() {
       return {
-        username:this.ruleForm.username,
+        userMobile:this.ruleForm.username,
         //password:sha1(this.ruleForm.password)
-        password:this.ruleForm.password
+        password:this.ruleForm.password,
+        confirmPassword:this.ruleForm.passwords,
+        code:this.ruleForm.code
       }
     },
     loginRequest() {
       return {
-        username:this.ruleForm.username,
+        userMobile:this.ruleForm.username,
         //password:sha1(this.ruleForm.password)
         password:this.ruleForm.password
       }
@@ -258,7 +258,10 @@ export default {
 <style lang="scss" scoped>
 #login {
   height: 100vh;
-  background-color: #344a5f;
+  //background-color: #344a5f;
+  overflow:-Scroll;
+  overflow-y:hidden;
+  background:url("./img/login.jpg") no-repeat;
 }
 .login-wrap {
   width: 330px;

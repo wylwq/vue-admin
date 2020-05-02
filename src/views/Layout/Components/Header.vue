@@ -42,12 +42,12 @@ export default {
     left: $nav-width;
     height: 75px;
     background-color: #fff;
-    -webkit-box-shadow: 0 3px 16px 0 rgba(0, 0, 0, .1);
+    -webkit-box-shadow: 0 3px 16px 0 rgba(0, 0, 0, 0.856);
   }
   .pull-right {
     float: right;
     margin-right: 30px;
-    width: 120px;
+    width: 160px;
     height: 100%;
     cursor: pointer;
   }

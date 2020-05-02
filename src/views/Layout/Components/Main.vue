@@ -1,7 +1,11 @@
 <template>
     <div id="main-warp">
         <div class="content">
-            <router-view/>
+            <keep-alive>
+                <!-- 需要缓存 -->
+                <router-view v-if="$route.meta.keepAlive"/>
+            </keep-alive>
+            <router-view v-if="!$route.meta.keepAlive"/>
         </div>
         
     </div>

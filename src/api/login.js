@@ -5,8 +5,7 @@ import service from '@/utils/interceptor'
 export function getSms(request) {
     return service.request({
         method: 'get',
-        url: 'getSms',
-        data: request
+        url: 'admin/sendCode?phone='+ request.phone,
     })
 }
 
@@ -16,7 +15,7 @@ export function getSms(request) {
 export function register(request) {
     return service.request({
         method:"post",
-        url:"register",
+        url:"admin/register",
         data:request
     })
 }
@@ -30,10 +29,9 @@ export function register(request) {
   * 登录接口
   */
  export function login(request) {
-    console.log(request);
     return service.request({
         method:"post",
-        url:"login",
+        url:"admin/login",
         data:request
     })
 }

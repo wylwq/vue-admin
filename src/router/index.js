@@ -5,7 +5,10 @@ import Layout from "../views/Layout/index.vue"
 
 Vue.use(VueRouter);
 
-const routes = [
+/**
+ * 1.默认路由
+ */
+export const defaultRouter = [
   {
     path: "/",
     redirect: "login",
@@ -42,11 +45,21 @@ const routes = [
         component:() => import("../views/Console/index.vue")
       }
     ]
-  },
+  }
+]
+
+const routes = [
+
+];
+/**
+ * 动态路由
+ */
+export const dynamicRouter = [
   {
     path: "/user",
     name: "User",
     meta:{
+      role: '用户管理',
       name:'用户管理',
       icon:'el-icon-s-custom'
     },
@@ -64,6 +77,7 @@ const routes = [
         path:'/indexUser',
         name:'IndexUser',
         meta:{
+          keepAlive: true,
           name:'查询用户'
         },
         component:() => import("../views/User/index.vue")
@@ -71,6 +85,7 @@ const routes = [
       {
         path:'/updateUser',
         name:'UpdateUser',
+        hidden: true,
         meta:{
           name:'修改用户'
         },
@@ -82,6 +97,7 @@ const routes = [
     path: "/store",
     name: "Store",
     meta:{
+      role:'库存管理',
       name:'库存管理',
       icon:'el-icon-coin'
     },
@@ -102,22 +118,65 @@ const routes = [
           name:'查询库存',
         },
         component:() => import("../views/Store/index.vue")
-      },
-      {
-        path:'/updateStore',
-        name:'UpdateStore',
-        meta:{
-          name:'修改库存'
-        },
-        component:() => import("../views/Store/update.vue")
       }
     ]
-  }
-
-];
+  },
+  {
+    path: "/order",
+    name: "Order",
+    meta:{
+      role: '订单管理',
+      name:'订单管理',
+      icon:'el-icon-s-order'
+    },
+    component: Layout,
+    children:[
+      {
+        path:'/addOrder',
+        name:'AddOrder',
+        hidden: true,
+        meta:{
+          name:'订单预定'
+        },
+        component:() => import("../views/Order/add.vue")
+      },
+      {
+        path:'/indexOrder',
+        name:'IndexOrder',
+        meta:{
+          name:'订单查询'
+        },
+        component:() => import("../views/Order/index.vue")
+      }
+    ]
+  },
+  // {
+  //   path: "/page404",
+  //   hidden:true,
+  //   meta:{
+  //     name:'404',
+  //     icon:'404'
+  //   },
+  //   component: Layout,
+  //   children:[
+  //     {
+  //       path:'/404',
+  //       meta:{
+  //         name:'404'
+  //       },
+  //       component:() => import("../views/404.vue")
+  //     }
+  //   ]
+  // },
+  // {
+  //   path:"*",
+  //   redirect:"/404",
+  //   hidden:true
+  // }
+]
 
 const router = new VueRouter({
-  routes
+  routes:defaultRouter
 });
 
 export default router;
