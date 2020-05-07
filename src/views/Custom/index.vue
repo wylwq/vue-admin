@@ -39,7 +39,7 @@
       </el-row>
     </el-form>
     <div class="black-space-10"></div>
-    <el-button type="success" icon="el-icon-circle-plus-outline" @click="dialogFlag = true">新增员工</el-button>
+    <el-button type="success" icon="el-icon-circle-plus-outline" @click="dialogFlag = true">新增用户</el-button>
     <div class="black-space-10"></div>
     <div class="black-space-10"></div>
     <TableVue ref="userTable" :config="tableConfig">

@@ -59,8 +59,8 @@ export const dynamicRouter = [
     path: "/user",
     name: "User",
     meta:{
-      role: '用户管理',
-      name:'用户管理',
+      role: '员工管理',
+      name:'员工管理',
       icon:'el-icon-s-custom'
     },
     component: Layout,
@@ -68,8 +68,9 @@ export const dynamicRouter = [
       {
         path:'/addUser',
         name:'AddUser',
+        hidden:true,
         meta:{
-          name:'新增用户'
+          name:'新增员工'
         },
         component:() => import("../views/User/add.vue")
       },
@@ -78,18 +79,9 @@ export const dynamicRouter = [
         name:'IndexUser',
         meta:{
           keepAlive: true,
-          name:'查询用户'
+          name:'查询员工'
         },
         component:() => import("../views/User/index.vue")
-      },
-      {
-        path:'/updateUser',
-        name:'UpdateUser',
-        hidden: true,
-        meta:{
-          name:'修改用户'
-        },
-        component:() => import("../views/User/update.vue")
       }
     ]
   },
@@ -118,6 +110,15 @@ export const dynamicRouter = [
           name:'查询库存',
         },
         component:() => import("../views/Store/index.vue")
+      },
+      {
+        path:'/updateStore',
+        name:'UpdateStore',
+        hidden: true,
+        meta:{
+          name:'编辑商品'
+        },
+        component:() => import("../views/Store/update.vue")
       }
     ]
   },
@@ -150,6 +151,35 @@ export const dynamicRouter = [
       }
     ]
   },
+  {
+    path: "/custom",
+    name: "Custom",
+    meta:{
+      role: '客户管理',
+      name:'客户管理',
+      icon:'el-icon-s-custom'
+    },
+    component: Layout,
+    children:[
+      {
+        path:'/addCustom',
+        name:'AddCustom',
+        hidden:true,
+        meta:{
+          name:'新增客户'
+        },
+        component:() => import("../views/Custom/add.vue")
+      },
+      {
+        path:'/indexCustom',
+        name:'IndexCustom',
+        meta:{
+          name:'查询客户'
+        },
+        component:() => import("../views/Custom/index.vue")
+      }
+    ]
+  }
   // {
   //   path: "/page404",
   //   hidden:true,

@@ -1,154 +1,262 @@
 <template>
   <div id="indexStore">
-    <el-form :inline="true" :model="user" class="demo-form-inline">
+    <el-form :inline="true" :model="store" class="demo-form-inline">
       <el-row>
-         <el-col :span="20">
-          <el-col :span="5">
-            <el-form-item>
-              <el-input placeholder="手机号" prefix-icon="el-icon-mobile-phone" v-model="user.userPhone"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="5">
-            <el-form-item>
-              <el-input
-                placeholder="地址"
-                prefix-icon="el-icon-location-outline"
-                v-model="user.address"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="7">
-            <el-form-item label="性别:">
-              <el-select v-model="user.sex" placeholder="请选择">
-                <el-option label="男性" value="男"></el-option>
-                <el-option label="女性" value="女"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="5">
-            <el-form-item>
-              <el-input placeholder="请输入关键字" prefix-icon="el-icon-search" v-model="user.userName"></el-input>
-            </el-form-item>
-          </el-col>
-          </el-col>
-          <el-col :span="4">
-          <el-col :span="4">
-            <el-button type="primary" icon="el-icon-search" @click="searchUser">搜索</el-button>
-          </el-col>
-          </el-col>
+        <el-col :span="5">
+          <el-form-item label="类型:">
+            <el-select v-model="store.storeParent" clearable placeholder="请选择">
+              <el-option
+                v-for="item in store.options"
+                :key="item.id"
+                :value="item.id"
+                :label="item.categoryName"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="5">
+          <el-form-item label="状态:">
+            <el-select v-model="store.storeStatus" placeholder="请选择">
+              <el-option label="上架" value="1"></el-option>
+              <el-option label="下架" value="2"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="日期:">
+            <el-date-picker 
+            v-model="store.createTime" 
+            type="datetime" 
+            placeholder="创建时间"
+            value-format="yyyy-MM-dd HH:mm:ss">
+            </el-date-picker>
+          </el-form-item>
+        </el-col>
+        <el-col :span="5">
+          <el-form-item>
+            <el-input placeholder="请输入关键字" prefix-icon="el-icon-search" v-model="store.keyWord"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="3">
+          <el-button type="primary" icon="el-icon-search" @click="getStoreList">搜索</el-button>
+        </el-col>
       </el-row>
     </el-form>
     <div class="black-space-10"></div>
-    <el-button type="success" icon="el-icon-circle-plus-outline" @click="dialogFlag = true">新增用户</el-button>
+    <el-button type="success" icon="el-icon-circle-plus-outline" @click="dialogFlag = true">新增商品</el-button>
     <div class="black-space-10"></div>
-    <div class="black-space-10"></div>
-    <TableVue ref="userTable" :config="tableConfig">
-      <!-- <template v-slot:status="slotData">
-          <el-switch v-model="slotData.data.status" active-color="#13ce66" @change="activeUser(slotData.data)"
-          active-value="1" inactive-value="2" inactive-color="#ff4949" ></el-switch>
-      </template> -->
-      <template v-slot:operation="slotData">
-          <el-button type="warning"  icon="el-icon-edit" size="mini" class="a" @click="edit(slotData.data)">编辑</el-button>
-          <el-button size="mini" type="danger" icon="el-icon-delete" @click="del(slotData.data)">删除</el-button>
-      </template>
-    </TableVue>
-    <DialogInfo :flag="dialogFlag" :editData="editData" @close="closeDialog"/>
+    <!-- 表格数据 -->
+    <el-table :data="tableData" 
+              v-loading="loading"
+              element-loading-text="拼命加载中"
+              element-loading-spinner="el-icon-loading"
+              element-loading-background="rgba(0, 0, 0, 0.8)" 
+              @selection-change="handleSelectionChange"
+              style="width: 100%">
+      <el-table-column type="selection" width="50"></el-table-column>
+      <el-table-column prop="storeName" label="商品名称" width="150"></el-table-column>
+      <el-table-column prop="createTime" label="创建日期" width="160" :formatter="toDate"></el-table-column>
+      <el-table-column prop="storeNum" label="库存"></el-table-column>
+      <el-table-column prop="storeFee" label="单价" :formatter="toNumber"></el-table-column>
+      <el-table-column prop="storeStatus" label="状态" :formatter="toStatus"></el-table-column>
+      <el-table-column label="商品属性">
+        <template slot-scope="scope">
+              <span v-html="scope.row.storeParam"></span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <!--<el-button type="warning" icon="el-icon-edit" size="mini" @click="handleEdit(scope.row.id)">上下架</el-button>-->
+          <router-link :to="{name: 'UpdateStore', query:{id: scope.row.id}}">
+            <el-button type="warning" icon="el-icon-edit" size="mini" class="a">编辑</el-button>
+          </router-link>
+          <el-button size="mini" type="danger" icon="el-icon-delete" @click="delUserById(scope.row.id)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <div class="black-space-30"></div>
+    <!-- 底部分页 -->
+    <el-row>
+      <el-col :span="8">
+        <el-button size="medium" @click="delAll">批量处理</el-button>
+      </el-col>
+      <el-col :span="16">
+        <el-pagination
+          class="pull-right"
+          :current-page="2"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :page-sizes="[10, 20, 50, 100]"
+          background
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="totalPage"
+        ></el-pagination>
+      </el-col>
+    </el-row>
+    <!-- 新增弹窗 -->
+    <DialogInfo :flag="dialogFlag" @close="closeDialog" @getStoreList="getStoreList" :category="store.options"/>
+    <!--修改弹窗 -->
+    <!--<DialogInfoEdit :flag="dialogFlagEdit" @close="closeDialog" @getStoreList="getStoreList" :id="storeId" :category="userInfo.options"/>-->
   </div>
 </template>
 <script>
-import TableVue from "@/components/table/index.vue";
-import {requestUrl} from "@/api/requesturl.js";
 import DialogInfo from "./dailog/info.vue";
-import {DelUser} from "@/api/user.js";
+import DialogInfoEdit from "./dailog/edit.vue";
+import {addFirstCategory, getFirstCategory, deleteCategory, editFirstCategory} from '@/api/category.js';
+import {addStore, getStore, deleteStore} from '@/api/store.js';
+import {dateFormat, numberFormat} from '@/utils/common.js'
 export default {
   name: "indexStore",
-  components: { TableVue, DialogInfo },
+  components: { DialogInfo, DialogInfoEdit },
   data() {
     return {
-      user: {
-        userPhone: "",
-        address: "",
-        sex: "",
-        userName: ""
+      store: {
+        options: [{
+          id:'1',
+          categoryName:'测试'
+        }],
+        storeParent: "",
+        createTime: "",
+        keyWord: "",
+        storeStatus:""
       },
-      tableConfig: {
-        selection: false,
-        recordCheckbox: true,
-        req: {
-          url : requestUrl.userList,
-          method: 'post',
-          data:{
-            pageNumber:1,
-            pageSize:10
-          }
+
+      tableData: [
+        {
+          storeName:"毛大衣",
+          createTime:"2016-05-02",
+          storeNum: 10,
+          storeFee:0,
+          storeParam:"颜色:白色",
+          storeStatus: "上架",
         },
-        tableHeader: [
-          { label: "电话", field: "userPhone",width: "130px" },
-          { label: "姓名", field: "userName" },
-          { label: "地址", field: "userAddress" },
-          { label: "年龄", field: "userAge" , width: "100px"},
-          { label: "性别", field: "userSex" ,width: "100px"},
-          { label: "角色", field: "adminFlag" },
-          //{
-           // label: "状态",
-           // field: "status",
-           // columnType: "slot",
-           // slotName: "status"
-          //},
-          {
-            label: "操作",
-            columnType: "slot",
-            slotName: "operation"
-          }
-        ],
-        tableBody: []
-      },
+        {
+          storeName:"毛大衣",
+          createTime:"2016-05-02",
+          storeNum: 10,
+          storeFee:0,
+          storeParam:"颜色:白色",
+          storeStatus: "上架",
+        },
+       {
+          storeName:"毛大衣",
+          createTime:"2016-05-02",
+          storeNum: 10,
+          storeFee:0,
+          storeParam:"颜色:白色",
+          storeStatus: "上架",
+        }
+      ],
       dialogFlag: false,
-      editData:{},
-      id:"",
+      dialogFlagEdit:false,
+      totalPage:0,
+      page:{
+        pageNumber:1,
+        pageSize:10
+      },
+      loading:false,
+      ids:'',
+      storeId:0
     };
   },
-  methods:{
-    edit(data) {
-      this.editData = JSON.parse(JSON.stringify(data));
-      this.dialogFlag = true;
-      //子组件调用父组件的方法
-      this.$refs['userTable'].refresh();
+  methods: {
+    handleSizeChange(val) {
+      this.page.pageSize = val;
+      console.log(`每页 ${val} 条`);
     },
-    del(data) {
-      this.id = data.id;
-      this.confirm({
-        content: "是否确认删除选中的用户信息?",
-        fn: this.delUser
-      });
-      //子组件调用父组件的方法
-    },
-    delUser() {
-      DelUser(this.id).then(response => {
-        this.$message({
-            message: response.msg,
-            type: "success"
-          });
-        this.$refs['userTable'].refresh();
-        this.id = "";
-      }).catch(error => {
-        this.$message({
-            message: error.msg,
-            type: "error"
-          });
-      })
+    handleCurrentChange(val) {
+      this.page.pageNumber = val;
+      console.log(`当前页: ${val}`);
     },
     closeDialog() {
       this.dialogFlag = false;
       this.dialogFlagEdit = false;
-      this.$refs['userTable'].refresh();
     },
-    searchUser() {
-      this.$refs['userTable'].paramsRefresh(this.user);
+    delUserById(id) {
+      this.ids = [id];
+      this.confirm({
+        content: "是否确认删除当前信息?",
+        fn: this.confirmDelete
+      });
+    },
+    delAll() {
+      if(!this.ids || this.ids.length == 0) {
+        this.$message({
+          message:"请选择要删除的库存信息",
+          type:"error"
+        })
+        return false;
+      }
+      this.confirm({
+        content: "是否确认删除选中的用户信息?",
+        fn: this.confirmDelete
+      });
+    },
+    confirmDelete() {
+      deleteStore(this.ids).then(response => {
+        // this.$message({
+        //   message:response.msg,
+        //   type:"success"
+        // })
+        this.ids = '';
+        this.getStoreList();
+      }).catch(error => {
+
+      })
+    },
+    getStoreList() {
+      let requestData = {
+        storeParent:this.store.storeParent,
+        storeStatus:this.store.storeStatus,
+        keyWord:this.store.keyWord,
+        createTime:this.store.date,
+        pageSize:this.page.pageSize,
+        pageNumber:this.page.pageNumber
+      };
+      console.log(requestData);
+      this.loading = true;
+      getStore(requestData).then(response => {
+          let data = response.data;
+          let totalPage = response.total;
+          console.log(data);
+          this.tableData = data;
+          this.totalPage = totalPage;
+          this.loading = false;
+      }).catch(error => {
+          this.loading = false;
+      })
+
+    },
+    toDate(row, column, cellValue, index) {
+      return dateFormat("YYYY-mm-dd HH:MM:SS", row.createTime);
+    },
+    toNumber(row, column, cellValue, index) {
+      return row.storeNum;
+    },
+    toStatus(row, column, cellValue, index) {
+      return row.storeStatus == 1 ? '上架':'下架';
+    },
+    handleSelectionChange(val) {
+      console.log(val);
+      let id = val.map(item => item.id);
+      this.ids = id;
+      console.log(id);
+    },
+    handleEdit(id) {
+      this.dialogFlagEdit = true;
+      this.storeId = id;
     }
   },
-  beforeMount() {
-  }
+  mounted:function() {
+      getFirstCategory().then(response => {
+        let data = response.data;
+        console.log(data);
+        this.store.options = data;
+      }).catch(error => {
+
+      }),
+      this.getStoreList();
+    }
 };
 </script>
 <style lang="scss" scoped>

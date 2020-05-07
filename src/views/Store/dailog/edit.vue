@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 修改弹窗 -->
-    <el-dialog title="修改用户" :visible.sync="dialogFlag" :modal="false" @close="close" width="580px" @opened="openDialog">
+    <el-dialog title="修改商品" :visible.sync="dialogFlag" :modal="false" @close="close" width="580px" @opened="openDialog">
       <el-form :model="form" ref="addInfoForm">
         <el-form-item label="标题" :label-width="formLabelWidth" prop="firstCategory">
           <el-select v-model="form.firstCategory" placeholder="一级分类">
