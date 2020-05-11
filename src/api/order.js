@@ -17,7 +17,7 @@ export function addOrder(request) {
     console.log(request);
     return service.request({
         method:'post',
-        url:'/order/addStore',
+        url:'/order/commitOrder',
         data:request,
     })
 }

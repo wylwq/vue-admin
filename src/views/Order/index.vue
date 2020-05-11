@@ -37,8 +37,6 @@
       </el-row>
     </el-form>
     <div class="black-space-10"></div>
-    <el-button type="success" icon="el-icon-circle-plus-outline" @click="addPush">订单预定</el-button>
-    <div class="black-space-10"></div>
     <!-- 表格数据 -->
     <el-table :data="tableData" 
               v-loading="loading"
@@ -50,7 +48,7 @@
       <el-table-column prop="orderNo" label="订单号" width="200"></el-table-column>
       <el-table-column prop="createTime" label="下单时间" width="180"></el-table-column>
       <el-table-column prop="orderStatus" label="订单状态" width="160" :formatter="orderStatusConventer"></el-table-column>
-      <el-table-column prop="orderAmount" label="支付金额" width="80"></el-table-column>
+      <el-table-column prop="orderAmount" label="支付金额" width="80" :formatter="orderAmountConventer"></el-table-column>
       <el-table-column prop="userPhone" label="买家电话"></el-table-column>
       <el-table-column prop="payStatus" label="支付状态" :formatter="payStatusConventer"></el-table-column>
       <el-table-column label="操作" width="300">
@@ -206,6 +204,9 @@ export default {
     },
     payStatusConventer(row, column, cellValue, index) {
       return this.payStatus[row.payStatus];
+    },
+    orderAmountConventer(row, column, cellValue, index) {
+      return row.orderAmount / 100;
     }
   },
   mounted:function() {

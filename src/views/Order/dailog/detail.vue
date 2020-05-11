@@ -64,6 +64,7 @@ export default {
       detailOrder(this.id).then(response => {
         let data = response.data;
         this.form = data;
+        this.form.goodsTotal = this.form.goodsTotal / 100;
       }).catch(error => {
 
       })

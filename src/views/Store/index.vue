@@ -64,13 +64,16 @@
               <span v-html="scope.row.storeParam"></span>
         </template>
       </el-table-column>
-      <el-table-column label="操作">
+      <el-table-column label="操作" width="300">
         <template slot-scope="scope">
           <!--<el-button type="warning" icon="el-icon-edit" size="mini" @click="handleEdit(scope.row.id)">上下架</el-button>-->
           <router-link :to="{name: 'UpdateStore', query:{id: scope.row.id}}">
             <el-button type="warning" icon="el-icon-edit" size="mini" class="a">编辑</el-button>
           </router-link>
-          <el-button size="mini" type="danger" icon="el-icon-delete" @click="delUserById(scope.row.id)">删除</el-button>
+          <el-button size="mini" type="danger" icon="el-icon-delete" @click="delUserById(scope.row.id)" class="a">删除</el-button>
+          <router-link :to="{name: 'AddOrder', query:{data: scope.row}}">
+            <el-button size="mini" type="danger" icon="el-icon-s-order" :disabled="!(scope.row.storeNum > 0 && scope.row.storeStatus == 1)">预定</el-button>
+          </router-link>
         </template>
       </el-table-column>
     </el-table>
@@ -231,7 +234,7 @@ export default {
       return dateFormat("YYYY-mm-dd HH:MM:SS", row.createTime);
     },
     toNumber(row, column, cellValue, index) {
-      return row.storeNum;
+      return row.storeFee / 100;
     },
     toStatus(row, column, cellValue, index) {
       return row.storeStatus == 1 ? '上架':'下架';

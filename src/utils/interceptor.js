@@ -6,8 +6,8 @@ import {setToken, getToken, setUsername, removeToken} from './appstore.js'
 //let BASEURL = process.env.NODE_ENV = 'production' ? '' : '/api';
 const BASEURL = '/api';
 const service = axios.create({
-    //baseURL : "http://47.108.138.0/api",
-    baseURL : "http://127.0.0.1:10080",
+    baseURL : "http://47.108.138.0/api",
+    //baseURL : "http://127.0.0.1:10080",
     timeout: 10000,
 });
 //alert(process.env.VUE_APP_ABC)

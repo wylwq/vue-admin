@@ -104,6 +104,7 @@ export default {
       let editData = this.editData;
       if(editData.id) {
         this.checkedRoles = editData.adminFlag.split(",");
+        this.roles = this.checkedRoles;
       } else {
         this.form.id && delete this.form.id;
       }
