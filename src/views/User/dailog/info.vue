@@ -51,7 +51,7 @@ export default {
   name: "dailog",
   components: { CityPick },
   data() {
-    const roleOptions = ['库存角色', '员工角色', '订单角色', '超级管理员'];
+    const roleOptions = ['员工管理', '库存管理', '订单管理', '客户管理'];
     var validateUsername = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("请输入手机号"));
